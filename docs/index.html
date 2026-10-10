@@ -111,6 +111,7 @@ a{color:inherit}
 .fb{color:var(--ink);border-bottom:1px solid var(--accent)}
 .meta{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim)}
 .meta em{font-style:normal;color:var(--rule)}
+.meta .venue{color:var(--accent)}
 
 .empty,.error{
   font-family:var(--mono);font-size:13px;color:var(--muted);
@@ -150,7 +151,7 @@ footer p{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin:0}
 <div class="controls">
   <div class="wrap">
     <div class="searchrow">
-      <input id="search" type="search" placeholder="Search titles and authors…" autocomplete="off" aria-label="Search publications">
+      <input id="search" type="search" placeholder="Search titles, authors and venues…" autocomplete="off" aria-label="Search publications">
       <span class="count" id="count"></span>
     </div>
     <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
@@ -172,6 +173,7 @@ const searchEl = document.getElementById("search");
 
 let PUBS = [];
 let active = null;   // active category filter, null = all
+const reviewed = p => p.venue && p.venue !== "preprint";   // venue badge
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -195,7 +197,7 @@ function renderAuthors(raw){
 function matches(p, q){
   if(active && p.category !== active) return false;
   if(!q) return true;
-  return (p.title + " " + p.authors + " " + p.category).toLowerCase().includes(q);
+  return (p.title + " " + p.authors + " " + p.category + " " + (p.venue || "")).toLowerCase().includes(q);
 }
 
 function render(){
@@ -221,7 +223,7 @@ function render(){
       <div class="body">
         <h2><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a></h2>
         <p class="authors">${renderAuthors(p.authors)}</p>
-        <p class="meta">${esc(p.category)} <em>·</em> ${esc(host(p.url))}${p.also ? ` <em>·</em> <a href="${esc(p.also)}" target="_blank" rel="noopener">${host(p.also) === "writings.flashbots.net" ? "Long read" : "Paper"} ↗</a>` : ""}</p>
+        <p class="meta">${esc(p.category)}${reviewed(p) ? ` <em>·</em> <span class="venue">${esc(p.venue)}</span>` : ""} <em>·</em> ${esc(host(p.url))}${p.also ? ` <em>·</em> <a href="${esc(p.also)}" target="_blank" rel="noopener">${host(p.also) === "writings.flashbots.net" ? "Long read" : "Paper"} ↗</a>` : ""}</p>
       </div>
     </article>`;
   }

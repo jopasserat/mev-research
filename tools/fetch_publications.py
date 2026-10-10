@@ -202,6 +202,68 @@ def eprint(since):
         url = token and "https://eprint.iacr.org/oai?verb=ListRecords&resumptionToken=" + urllib.parse.quote(token)
 
 
+# Venue short name -> how it shows up in arXiv comments, ePrint "Publication info" and OpenAlex/DOI data.
+# Order matters: workshops before conferences, EuroS&P before S&P. Acronyms are case-sensitive, full names are not.
+# A venue missing here only means the fetcher can't fill it in: reviewers set `venue:` by hand.
+# Workshops without their own entry come out as their host ("NeurIPS 2023"): refine by hand.
+VENUES = [
+    ("SysTEX", r"(?i:systex)"),  # workshops first: they name their co-located host
+    ("AFT", r"\bAFT\b|(?i:advances in financial technolog)"),
+    ("FC", r"\bFC\b ?'?\d\d|(?i:financial cryptography)"),
+    ("EC", r"\bEC\b ?'?\d\d|(?i:economics and computation)"),
+    ("CCS", r"\bCCS\b|(?i:computer and communications security)"),
+    ("EuroS&P", r"EuroS&P|(?i:european symposium on security and privacy)"),
+    ("IEEE S&P", r"\bS&P\b|(?i:symposium on security and privacy)"),
+    ("USENIX Security", r"(?i:usenix security)"),
+    ("NDSS", r"\bNDSS\b"),
+    ("CRYPTO", r"\bCRYPTO\b|(?i:international cryptology conference)"),
+    ("EUROCRYPT", r"\bEUROCRYPT\b|(?i:eurocrypt)"),
+    ("ASIACRYPT", r"\bASIACRYPT\b|(?i:asiacrypt)"),
+    ("TCC", r"\bTCC\b|(?i:theory of cryptography conference)"),
+    ("PODC", r"\bPODC\b|(?i:principles of distributed computing)"),
+    ("WINE", r"\bWINE\b|(?i:web and internet economics)"),
+    ("SBC", r"(?i:science of blockchain)"),
+    ("PETS", r"\bPETS\b|\bPoPETs\b|(?i:privacy enhancing technologies)"),
+    ("ESORICS", r"\bESORICS\b"),
+    ("ICBC", r"\bICBC\b|(?i:international conference on blockchain and cryptocurrency)"),
+    ("NeurIPS", r"\bNeurIPS\b|(?i:neural information processing systems)"),
+    ("Mathematical Finance", r"(?i:mathematical finance)"),
+]
+NOT_YET = re.compile(r"(?i)submitted|under review|under submission|in submission")
+
+
+def venue_in(text):
+    """"AFT 2026" from text like "...to appear in ... (AFT 2026)" or "LIPIcs.AFT.2026.30"; None if no known venue."""
+    for name, pattern in VENUES:
+        for m in re.finditer(pattern, text):
+            if NOT_YET.search(text[max(0, m.start() - 80):m.end() + 20]):
+                continue
+            year = re.search(r"\b(20\d\d)\b|'(\d\d)\b", text[m.start():m.end() + 40]) or re.search(r"\b(20\d\d)\b", text)
+            return f"{name} {year[1] or '20' + year[2]}" if year else name
+    return None
+
+
+def venue(url):
+    """Where a paper was published, from what arXiv / ePrint / OpenAlex record; None while unknown."""
+    texts = []
+    if m := re.search(r"arxiv\.org/abs/(.+)", url):
+        e = ET.fromstring(get(f"https://export.arxiv.org/api/query?id_list={m[1]}"))
+        texts += [x.text or "" for x in e.iter() if x.tag.endswith(("}comment", "}journal_ref"))]
+        try:
+            work = json.loads(get(f"https://api.openalex.org/works/doi:10.48550/arXiv.{m[1]}"))
+            texts += [" ".join(str(v) for v in (l.get("landing_page_url"), l.get("raw_source_name"),
+                                                 (l.get("source") or {}).get("display_name")) if v)
+                      for l in work.get("locations", [])]
+        except urllib.error.HTTPError:
+            pass  # not in OpenAlex (yet)
+        time.sleep(1)
+    elif "eprint.iacr.org" in url:
+        page = get(url).decode("utf-8", "replace")
+        info = page[page.find("Publication info"):][:600]
+        texts.append(html.unescape(re.sub(r"<[^>]+>", " ", info)))
+    return next((v for v in map(venue_in, texts) if v), None)
+
+
 STOPWORDS = {"a", "an", "the", "of", "in", "on", "for", "and", "to", "with", "is", "are", "at", "via", "from",
              "by", "how", "why", "what", "when", "do", "does", "paper"}
 
@@ -286,6 +348,17 @@ def main():
     seen = ({key(u) for r in existing for u in (r["url"], r.get("also")) if u}
             | {(r["category"], norm(r["title"])) for r in existing})
     new, errors = fetch(since, seen | {key(u) for u in ignored}, existing)
+    for e in new:
+        if e["category"] == AP and (v := venue(e["url"])):
+            e["venue"] = v
+    # Listed papers not yet known to be published: did a venue appear? ("venue: preprint" opts out.)
+    text = YAML.read_text(encoding="utf-8")
+    found = []
+    for r in yaml.safe_load(text):
+        if r["category"] == AP and not r.get("venue") and (v := venue(r["url"])):
+            text = text.replace(f"  url: {r['url']}\n", f"  url: {r['url']}\n  " + yaml.safe_dump({"venue": v}), 1)
+            found.append((r, v))
+    YAML.write_text(text, encoding="utf-8")
     for e in new:  # the other direction: a new paper or writing that a listed forum post was showcasing
         if e["category"] in (AP, FW):
             posts = [r["url"] for r in existing if r["category"] not in (AP, FW) and same_work(r["title"], e["title"])]
@@ -304,9 +377,15 @@ def main():
     for e in new:
         cc = mentions(e["authors"])
         print(f"- **{e['category']}** · {e['date']} · [{e['title']}]({e['url']}) · {e['authors'] or '_authors missing_'}"
+              + (f" · *{e['venue']}*" if e.get("venue") else "")
               + (f" · cc {cc}" if cc else "") + (f"  \n  ⚠️ {e['note']}" if e["note"] else ""))
     if not new:
         print("_Nothing new._")
+    if found:
+        print("\nVenues found for listed papers (now in publications.yaml; "
+              "set `venue: preprint` on a paper to stop checking it):\n")
+        for r, v in found:
+            print(f"- {v}: [{r['title']}]({r['url']})")
     for err in errors:
         print(f"\n> ⚠️ source failed: `{err}`")
 
@@ -318,6 +397,12 @@ assert key("https://ia.cr/2025/1384") == key("https://eprint.iacr.org/2025/1384"
 assert key("https://ethresear.ch/t/x/23635") == key("https://ethresear.ch/t/23635") == "ethresear.ch:23635"
 assert "burak oz" in TEAM and "ari juels" not in TEAM
 assert mentions("Ari Juels, Burak Oez (Flashbots), Burak Öz") == "@boz1" and mentions("") == ""
+assert venue_in("This is the full version. The proceedings is to appear in 8th Conference on Advances in Financial Technologeis (AFT 2026)") == "AFT 2026"
+assert venue_in("In Financial Cryptography and Data Security 2026") == "FC 2026"
+assert venue_in("https://doi.org/10.4230/LIPIcs.AFT.2024.30 Leibniz international proceedings in informatics") == "AFT 2024"
+assert venue_in("Published elsewhere. Minor revision. Advances in Financial Technologies (AFT) DOI 10.4230/LIPIcs.AFT.2026.30") == "AFT 2026"
+assert venue_in("Accepted at SysTEX 2026, co-located with EuroS&P") == "SysTEX 2026"
+assert venue_in("Submitted to CCS 2025") is None and venue_in("12 pages, 3 figures") is None
 assert same_work("Do Ahead-of-Time Auctions Work?", "TimeBoost: Do Ahead-of-Time Auctions Work?")
 assert same_work("ZTEE: Trustless Supply Chains", "ZTEE - Trustless Supply Chains")
 assert not same_work("The Free Option Problem in ePBS, Part II", "The Free Option Problem of ePBS")
