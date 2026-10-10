@@ -89,12 +89,17 @@ a{color:inherit}
 .yearmark hr{flex:1;border:0;border-top:1px solid var(--rule-soft);margin:0}
 
 .entry{
+  position:relative;
   display:grid;grid-template-columns:96px 1fr;gap:0 20px;
   padding:16px 0;border-bottom:1px solid var(--rule-soft);
-  text-decoration:none;
 }
 .entry:hover{background:linear-gradient(90deg,rgba(255,176,32,.05),transparent 70%)}
-.entry:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.entry:focus-within{outline:2px solid var(--focus);outline-offset:2px}
+/* the title link covers the whole card; the "also" link sits above it */
+.body h2 a{text-decoration:none;outline:none}
+.body h2 a::after{content:"";position:absolute;inset:0}
+.meta a{position:relative;z-index:1;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--rule)}
+.meta a:hover{color:var(--accent);border-color:var(--accent)}
 .stamp{font-family:var(--mono);font-size:11.5px;color:var(--dim);padding-top:5px;white-space:nowrap}
 .entry:hover .stamp{color:var(--accent)}
 .body h2{
@@ -170,18 +175,18 @@ let active = null;   // active category filter, null = all
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
+const host = url => new URL(url).hostname.replace(/^www\./,"");
+
 function stamp(iso){
   const [y,m,d] = iso.split("-");
   return `${MONTHS[+m-1]} ${+d} ${y}`;
 }
 
-// The source spreadsheet's convention: if any author is tagged "(Flashbots)",
-// only those are Flashbots. If none are tagged, the whole author list is Flashbots.
+// Flashbots authors are the ones tagged "(Flashbots)".
 function renderAuthors(raw){
   if(!raw) return '<span style="color:var(--dim)">Authors not listed</span>';
-  const tagged = raw.includes("(Flashbots)");
   return raw.split(/,\s*/).map(name => {
-    const isFb = tagged ? name.includes("(Flashbots)") : true;
+    const isFb = name.includes("(Flashbots)");
     const clean = esc(name.replace(/\s*\(Flashbots\)/,"").trim());
     return isFb ? `<span class="fb">${clean}</span>` : clean;
   }).join(", ");
@@ -211,14 +216,14 @@ function render(){
       year = y;
       html += `<div class="yearmark"><span>${y}</span><hr></div>`;
     }
-    html += `<a class="entry" href="${esc(p.url)}" target="_blank" rel="noopener">
+    html += `<article class="entry">
       <div class="stamp">${stamp(p.date)}</div>
       <div class="body">
-        <h2>${esc(p.title)}</h2>
+        <h2><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a></h2>
         <p class="authors">${renderAuthors(p.authors)}</p>
-        <p class="meta">${esc(p.category)} <em>·</em> ${esc(new URL(p.url).hostname.replace(/^www\./,""))}</p>
+        <p class="meta">${esc(p.category)} <em>·</em> ${esc(host(p.url))}${p.also ? ` <em>·</em> <a href="${esc(p.also)}" target="_blank" rel="noopener">${host(p.also) === "writings.flashbots.net" ? "Long read" : "Paper"} ↗</a>` : ""}</p>
       </div>
-    </a>`;
+    </article>`;
   }
   listEl.innerHTML = html;
 }
@@ -250,7 +255,7 @@ fetch("publications.json")
     render();
     const latest = PUBS[0].date.slice(0,4), oldest = PUBS[PUBS.length-1].date.slice(0,4);
     document.getElementById("footnote").textContent =
-      `${PUBS.length} publications, ${oldest}–${latest}. Data lives in publications.json — edit it to update this page.`;
+      `${PUBS.length} publications, ${oldest}–${latest}. Source: publications.yaml in github.com/flashbots/mev-research.`;
     searchEl.addEventListener("input", render);
   })
   .catch(err => {
