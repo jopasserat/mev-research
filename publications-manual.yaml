@@ -21,21 +21,24 @@
 # members, whose handles the fetcher no longer searches.
 - category: Academic Papers
   title: Axioms for Constant Function Market Makers
-  date: 2026-06-25
+  date: 2022-09-30
   authors: Christoph Schlegel (Flashbots), Mateusz Kwaśnicki, Akaki Mamageishvili
   url: https://onlinelibrary.wiley.com/doi/10.1111/mafi.70041
-  venue: Mathematical Finance
+  also: https://arxiv.org/abs/2210.00048
+  venue: EC 2023, Mathematical Finance 2026
 - category: Academic Papers
   title: 'Buying Time: Latency Racing vs. Bidding for Transaction Ordering'
-  date: 2023-10-18
-  authors: Akaki Mamageishvili, Mahimna Kelkar, Jan Christoph Schlegel (Flashbots), Edward W. Felten
+  date: 2023-06-03
+  authors: Akaki Mamageishvili, Mahimna Kelkar, Christoph Schlegel (Flashbots), Edward W. Felten
   url: https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.AFT.2023.23
+  also: https://arxiv.org/abs/2306.02179
   venue: AFT 2023
 - category: Academic Papers
   title: Would Friedman Burn your Tokens?
   date: 2023-06-29
-  authors: Aggelos Kiayias, Philip Lazos, Jan Christoph Schlegel (Flashbots)
+  authors: Aggelos Kiayias, Philip Lazos, Christoph Schlegel (Flashbots)
   url: https://arxiv.org/abs/2306.17025
+  venue: FC 2024
 - category: Academic Papers
   title: Time/Space Tradeoffs for Generic Attacks on Delay Functions
   date: 2025-12-05

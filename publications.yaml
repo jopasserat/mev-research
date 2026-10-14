@@ -55,6 +55,7 @@
   date: 2026-02-25
   authors: Bruno Mazorra (Flashbots), Christoph Schlegel (Flashbots), Akaki Mamageishvili
   url: https://arxiv.org/abs/2602.22032
+  venue: EC 2026
 - category: Flashbots Writings
   title: Network Anonymized Mempools
   date: 2026-02-17
@@ -248,7 +249,8 @@
   date: 2024-07-10
   authors: Akaki Mamageishvili, Christoph Schlegel (Flashbots), Benny Sudakov, Danning Sui (Flashbots)
   url: https://arxiv.org/abs/2407.07474
-  venue: AFT 2024
+  also: https://dl.acm.org/doi/10.1145/3840300
+  venue: AFT 2024, ACM Transactions on the Web 2026
 - category: Flashbots Collective Forum Posts
   title: Pricing Execution Rights when Rewards are Mean Reverting
   date: 2024-06-30
@@ -346,6 +348,7 @@
   date: 2023-12-04
   authors: Christoph Schlegel (Flashbots)
   url: https://arxiv.org/abs/2312.02055
+  venue: FC DeFi 2024
 - category: Academic Papers
   title: 'Mempool Privacy: An Economic Perspective'
   date: 2023-07-20
@@ -445,6 +448,11 @@
   authors: Christoph Schlegel (Flashbots)
   url: https://arxiv.org/abs/2609.01489
 - category: Academic Papers
+  title: The Geography of (Concurrent) Block Proposing
+  date: 2026-10-13
+  authors: Ciamac C. Moallemi, Mallesh M. Pai, Dan Robinson, Christoph Schlegel (Flashbots)
+  url: https://arxiv.org/abs/2610.18812
+- category: Academic Papers
   title: Threat Vectors and the State of the Art in Defense Methods for Security in Neurotechnology
   date: 2026-07-11
   authors: Bryce-Allen Bagley, Nathaniel Rose, Quintus Kilbourn (Flashbots), Matthew Canham
@@ -452,5 +460,6 @@
 - category: Academic Papers
   title: Shared Sequencing and Latency Competition as a Noisy Contest
   date: 2023-10-03
-  authors: Akaki Mamageishvili, Jan Christoph Schlegel (Flashbots)
+  authors: Akaki Mamageishvili, Christoph Schlegel (Flashbots)
   url: https://arxiv.org/abs/2310.02390
+  venue: FC 2024
