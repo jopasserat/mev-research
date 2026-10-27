@@ -16,20 +16,22 @@ import datetime, html, json, time, pathlib, re, sys, unicodedata, urllib.error, 
 import xml.etree.ElementTree as ET
 import yaml
 
-# Forum -> (category, Discourse category ids that count as research; None = all).
+# Categories are Paper or Post; where a post appeared (writings, a forum) is read off its url.
+PAPER, POST = "Paper", "Post"
+ER, WRITINGS = "ethresear.ch", "writings.flashbots.net"
+
+# Forum -> Discourse category ids that count as research (None = all).
 # Who is searched comes from team.yaml.
 # ethresear.ch first: a post cross-posted to both forums is listed once, from ethresear.ch (wider audience).
 FORUMS = {
-    "ethresear.ch": ("ethresear.ch Post", None),
+    ER: None,
     # Research, The Flashbots Ship (+subs), Data, TEE (+sub); not 25, Research > References (reading notes)
-    "collective.flashbots.net": ("Flashbots Collective Forum Posts", {20, 18, 21, 17, 13, 28, 30}),
+    "collective.flashbots.net": {20, 18, 21, 17, 13, 28, 30},
 }
-ER = FORUMS["ethresear.ch"][0]
 
 # ponytail: subject filter against arXiv name collisions (e.g. "Fei Wu" in cs.AI); arXiv/ORCID author ids would be exact.
 ARXIV_CATS = re.compile(r"^(cs\.(CR|GT|DC|NI|CE)|econ\.|q-fin\.)")
 
-AP, FW = "Academic Papers", "Flashbots Writings"
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 YAML = ROOT / "publications.yaml"  # bot appends here; publications-manual.yaml is humans only
 IGNORED = ROOT / "publications-ignored.yaml"  # URLs reviewers rejected; never proposed again
@@ -44,6 +46,15 @@ def norm(name):
 TEAM = {norm(n) for m in ROSTER for n in [m["name"], *m.get("aliases", [])]}
 # normalised name or alias -> GitHub handle, to @-mention authors on the PR
 GITHUB = {norm(n): m["github"] for m in ROSTER if m.get("github") for n in [m["name"], *m.get("aliases", [])]}
+
+
+def site(url):
+    return urllib.parse.urlsplit(url).hostname.removeprefix("www.")
+
+
+def showcased(e):
+    """Papers and writings: the works a forum post may merely present."""
+    return e["category"] == PAPER or site(e["url"]) == WRITINGS
 
 
 def mentions(authors):
@@ -86,7 +97,7 @@ def paper(title, date, names, url):
     else:
         return None  # team member's work under another affiliation, before or after Flashbots
     authors = ", ".join(n + " (Flashbots)" if n in fb else n for n in names)
-    return entry(AP, title, date, authors, url, note)
+    return entry(PAPER, title, date, authors, url, note)
 
 
 def key(url):
@@ -125,13 +136,13 @@ def writings(since):
             page = get(it.findtext("link")).decode("utf-8", "replace")
             names = [html.unescape(n).strip() for n in re.findall(r'class="avatar__name"[^>]*>(?:<[^>]+>)*([^<]+)', page)]
             names = [n for n in dict.fromkeys(names) if n.lower() not in ("flashbots", "friends")]
-            yield entry(FW, it.findtext("title"), d, ", ".join(n + " (Flashbots)" if norm(n) in TEAM else n for n in names),
+            yield entry(POST, it.findtext("title"), d, ", ".join(n + " (Flashbots)" if norm(n) in TEAM else n for n in names),
                         it.findtext("link"))
 
 
 def discourse(since):
     failed = []
-    for host, (category, cats) in FORUMS.items():
+    for host, cats in FORUMS.items():
         for user, name in [(m["forums"][host], m["name"]) for m in ROSTER if host in m.get("forums", {})]:
             # search, not /topics/created-by: the latter 404s for users who hide their activity
             q = urllib.parse.quote(f"@{user} in:first after:{since} order:latest")
@@ -148,7 +159,7 @@ def discourse(since):
                 for t in topics:
                     d = datetime.date.fromisoformat(t["created_at"][:10])
                     if d >= since and (cats is None or t["category_id"] in cats):
-                        yield entry(category, t["title"], d, f"{name} (Flashbots)", f"https://{host}/t/{t['slug']}/{t['id']}")
+                        yield entry(POST, t["title"], d, f"{name} (Flashbots)", f"https://{host}/t/{t['slug']}/{t['id']}")
                 if len(topics) < 50:  # Discourse search page size
                     break
             else:
@@ -302,9 +313,9 @@ def fetch(since, seen, listed=()):
                     continue
                 if source is discourse:
                     known = [*listed, *new]
-                    if e["category"] != ER and any(w["category"] == ER and same_work(e["title"], w["title"]) for w in known):
+                    if site(e["url"]) != ER and any(site(w["url"]) == ER and same_work(e["title"], w["title"]) for w in known):
                         continue  # cross-posted: keep the ethresear.ch copy
-                    drop, e["note"] = showcase(e, [w for w in known if w["category"] in (AP, FW)])
+                    drop, e["note"] = showcase(e, [w for w in known if showcased(w)])
                     if drop:
                         continue
                 seen |= ids
@@ -328,7 +339,7 @@ def check():
     tags = lambda a: {n.strip() for n in re.findall(r"([^,]+?) \(Flashbots\)", a or "")}
     by_key = {key(e["url"]): e for e in found}
     for r in listed:  # informational: listed tags vs what the paper says
-        if (e := by_key.get(key(r["url"]))) and e["category"] == AP and tags(r["authors"]) != tags(e["authors"]):
+        if (e := by_key.get(key(r["url"]))) and e["category"] == PAPER and tags(r["authors"]) != tags(e["authors"]):
             print(f"  TAGS {r['title'][:60]}: listed {sorted(tags(r['authors']))}, paper {sorted(tags(e['authors']))}"
                   + (f" ({e['note']})" if e["note"] else ""))
     for err in errors:
@@ -349,19 +360,19 @@ def main():
             | {(r["category"], norm(r["title"])) for r in existing})
     new, errors = fetch(since, seen | {key(u) for u in ignored}, existing)
     for e in new:
-        if e["category"] == AP and (v := venue(e["url"])):
+        if e["category"] == PAPER and (v := venue(e["url"])):
             e["venue"] = v
     # Listed papers not yet known to be published: did a venue appear? ("venue: preprint" opts out.)
     text = YAML.read_text(encoding="utf-8")
     found = []
     for r in yaml.safe_load(text):
-        if r["category"] == AP and not r.get("venue") and (v := venue(r["url"])):
+        if r["category"] == PAPER and not r.get("venue") and (v := venue(r["url"])):
             text = text.replace(f"  url: {r['url']}\n", f"  url: {r['url']}\n  " + yaml.safe_dump({"venue": v}), 1)
             found.append((r, v))
     YAML.write_text(text, encoding="utf-8")
     for e in new:  # the other direction: a new paper or writing that a listed forum post was showcasing
-        if e["category"] in (AP, FW):
-            posts = [r["url"] for r in existing if r["category"] not in (AP, FW) and same_work(r["title"], e["title"])]
+        if showcased(e):
+            posts = [r["url"] for r in existing if not showcased(r) and same_work(r["title"], e["title"])]
             if posts:
                 e["note"] = f"listed forum post(s) {', '.join(posts)} showcase this: remove them"
 
@@ -395,6 +406,9 @@ def main():
 assert key("https://arxiv.org/abs/2509.21475v2") == key("http://arxiv.org/pdf/2509.21475") == "arxiv:2509.21475"
 assert key("https://ia.cr/2025/1384") == key("https://eprint.iacr.org/2025/1384") == "eprint:2025/1384"
 assert key("https://ethresear.ch/t/x/23635") == key("https://ethresear.ch/t/23635") == "ethresear.ch:23635"
+assert site("https://www.ethresear.ch/t/x/1") == ER and site("https://writings.flashbots.net/x") == WRITINGS
+assert showcased({"category": POST, "url": "https://writings.flashbots.net/x"})
+assert not showcased({"category": POST, "url": "https://collective.flashbots.net/t/x/1"})
 assert "burak oz" in TEAM and "ari juels" not in TEAM
 assert mentions("Ari Juels, Burak Oez (Flashbots), Burak Öz") == "@boz1" and mentions("") == ""
 assert venue_in("This is the full version. The proceedings is to appear in 8th Conference on Advances in Financial Technologeis (AFT 2026)") == "AFT 2026"
