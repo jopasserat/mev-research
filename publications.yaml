@@ -19,6 +19,11 @@
 # underlines exactly those.
 # Quote any value containing ": " (e.g. title: 'A: B'), or YAML will not parse.
 
+- category: ethresear.ch Post
+  title: Why searchers and builders like candle auctions (and why it matters for the builder market post-Glamsterdam)
+  date: 2026-11-02
+  authors: Christoph Schlegel (Flashbots)
+  url: https://ethresear.ch/t/why-searchers-and-builders-like-candle-auctions-and-why-it-matters-for-the-builder-market-post-glamsterdam/26211
 - category: Flashbots Writings
   title: Why Location Choice Matters
   date: 2026-08-09
