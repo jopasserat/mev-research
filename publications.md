@@ -8,16 +8,18 @@ Authors tagged *(Flashbots)* are Flashbots-affiliated.
 
 ## Academic Papers
 
-47 entries.
+49 entries.
 
 | Date | Title | Authors |
 | --- | --- | --- |
+| 2026-11-19 | [Path-Independent Deleveraging Rules](https://arxiv.org/abs/2611.26623) | Christoph Schlegel (Flashbots), Akaki Mamageishvili |
+| 2026-10-13 | [The Geography of (Concurrent) Block Proposing](https://arxiv.org/abs/2610.18812) | Ciamac C. Moallemi, Mallesh M. Pai, Dan Robinson, Christoph Schlegel (Flashbots) |
 | 2026-09-23 | [No Place to Hide: An Analysis on Protected Order Flow Sandwich Attacks](https://arxiv.org/abs/2609.28115) · [also](https://x.com/boez95/status/2107121962086535449) | Lioba Heimbach, Ozan Solmaz, Burak Öz (Flashbots), Christof Ferreira Torres |
 | 2026-09-15 | [The price of anarchy in the max-distance network creation game is not constant](https://arxiv.org/abs/2609.17395) | Christoph Schlegel (Flashbots) |
 | 2026-09-01 | [Bi-Compositional Division Rules](https://arxiv.org/abs/2609.01489) | Christoph Schlegel (Flashbots) |
 | 2026-08-09 | [SoK: Encrypted Mempools Through the MEV Lens](https://eprint.iacr.org/2026/1643) · *AFT 2026* | Jonathan Passerat-Palmbach (Flashbots) |
 | 2026-07-11 | [Threat Vectors and the State of the Art in Defense Methods for Security in Neurotechnology](https://arxiv.org/abs/2607.10451) | Bryce-Allen Bagley, Nathaniel Rose, Quintus Kilbourn (Flashbots), Matthew Canham |
-| 2026-06-25 | [Axioms for Constant Function Market Makers](https://onlinelibrary.wiley.com/doi/10.1111/mafi.70041) · *Mathematical Finance* | Christoph Schlegel (Flashbots), Mateusz Kwaśnicki, Akaki Mamageishvili |
+| 2026-06-25 | [Axioms for Constant Function Market Makers](https://onlinelibrary.wiley.com/doi/10.1111/mafi.70041) · *EC 2023, Mathematical Finance (forthcoming)* | Christoph Schlegel (Flashbots), Mateusz Kwaśnicki, Akaki Mamageishvili |
 | 2026-06-11 | [Crypto x AI, AI x Crypto: A Survey](https://arxiv.org/abs/2606.13892) | Sarah Allen (Flashbots), Pranay Anchuri, James Austgen, Maryam Bahrani, Samuel Breckenridge, Aaron Buchwald, Christian Cachin, Andrés Fábrega, Jared Fernandez, James Hsin-yu Chiang, Marwa Mouallem, Roi Bar-Zur, Neil DeSilva, Ittay Eyal, Giulia Fanti, Ari Juels, Andrew Miller (Flashbots), Christian Sillaber, Dani Vilardell, Pramod Viswanath, Wenhao Wang, Matt Weinberg, Sen Yang, Jianzhu Yao, Fan Zhang |
 | 2026-06-04 | [Competing Auctions in Intermediated Markets](https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.AFT.2026.19) · *AFT 2026* · [also](https://arxiv.org/abs/2606.06633) | Bruno Mazorra (Flashbots), Minghao Pan (Flashbots), Christoph Schlegel (Flashbots) |
 | 2026-06-01 | [The Price of Decentralization in Block Building](https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.AFT.2026.25) · *AFT 2026* · [also](https://arxiv.org/abs/2606.01874) | Burak Öz (Flashbots), Fei Wu (Flashbots), Luis Correia (Flashbots), Sen Yang, Bruno Mazorra (Flashbots), Stefanos Leonardos |
@@ -25,7 +27,7 @@ Authors tagged *(Flashbots)* are Flashbots-affiliated.
 | 2026-04-28 | [Scale, Round, Break: Simple Leakage Attacks on Secret Sharing Schemes](https://eprint.iacr.org/2026/833) · *ASIACRYPT 2026* | Katharina Boudgoust, Mark Simkin (Flashbots) |
 | 2026-04-12 | [Mind the Gap: Where TEE Attestations Fall Short and Why We Need Proof of Cloud](https://writings.flashbots.net/mind-the-gap-tee-poc) · *SysTEX 2026* · [also](https://systex-workshop.github.io/2026/papers/systex26-paper66.pdf) | Filip Rezabek (Flashbots), Jonathan Passerat-Palmbach (Flashbots) |
 | 2026-03-20 | [Just-in-Time Resale in an Ahead-of-Time Auction for Faster Execution](https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.AFT.2026.20) · *AFT 2026* · [also](https://arxiv.org/abs/2603.20175) | Burak Öz (Flashbots), Christoph Schlegel (Flashbots), Akaki Mamageishvili, Ali Taslimi |
-| 2026-02-25 | [Timing Games: Probabilistic Backrunning and Spam](https://arxiv.org/abs/2602.22032) | Bruno Mazorra (Flashbots), Christoph Schlegel (Flashbots), Akaki Mamageishvili |
+| 2026-02-25 | [Timing Games: Probabilistic Backrunning and Spam](https://arxiv.org/abs/2602.22032) · *EC 2026* | Bruno Mazorra (Flashbots), Christoph Schlegel (Flashbots), Akaki Mamageishvili |
 | 2026-02-19 | [Oblivious Ciphertext Compression via Linear Codes](https://eprint.iacr.org/2026/329) · *EUROCRYPT 2026* | Pascal Giorgi, Bruno Grenet, Mark Simkin (Flashbots) |
 | 2026-01-02 | [The CoinAlg Bind: Profitability-Fairness Tradeoffs in Collective Investment Algorithms](https://arxiv.org/abs/2601.00523) | Andrés Fábrega, James Austgen, Samuel Breckenridge, Jay Yu, Amy Zhao, Sarah Allen (Flashbots), Aditya Saraf, Ari Juels |
 | 2025-12-05 | [Time/Space Tradeoffs for Generic Attacks on Delay Functions](https://link.springer.com/chapter/10.1007/978-3-032-12290-2_15) · *TCC 2025* | Kasper Green Larsen, Mark Simkin (Flashbots) |
@@ -50,15 +52,15 @@ Authors tagged *(Flashbots)* are Flashbots-affiliated.
 | 2024-08-05 | [PROF: Protected Order Flow in a Profit-Seeking World](https://arxiv.org/abs/2408.02303) · *EuroS&P 2026* | Kushal Babel, Nerla Jean-Louis, Yan Ji, Ujval Misra, Mahimna Kelkar, Kosala Yapa Mudiyanselage, Andrew Miller (Flashbots), Ari Juels |
 | 2024-07-19 | [On Sybil-proof Mechanisms](https://arxiv.org/abs/2407.14485) · *AFT 2026* | Minghao Pan (Flashbots), Bruno Mazorra (Flashbots), Christoph Schlegel (Flashbots), Akaki Mamageishvili |
 | 2024-07-18 | [Who Wins Ethereum Block Building Auctions and Why?](https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.AFT.2024.22) · *AFT 2024* · [also](https://arxiv.org/abs/2407.13931) | Burak Öz, Danning Sui (Flashbots), Thomas Thiery, Florian Matthes |
-| 2024-07-10 | [Searcher Competition in Block Building](https://arxiv.org/abs/2407.07474) · *AFT 2024* | Akaki Mamageishvili, Christoph Schlegel (Flashbots), Benny Sudakov, Danning Sui (Flashbots) |
+| 2024-07-10 | [Searcher Competition in Block Building](https://arxiv.org/abs/2407.07474) · *AFT 2024, ACM Transactions on the Web* | Akaki Mamageishvili, Christoph Schlegel (Flashbots), Benny Sudakov, Danning Sui (Flashbots) |
 | 2024-02-15 | [OCash: Fully Anonymous Payments between Blockchain Light Clients](https://ia.cr/2024/246) | Adam Blatchley Hansen, Jesper Buus Nielsen, Mark Simkin (Flashbots) |
-| 2023-12-04 | [Transaction Ordering Auctions](https://arxiv.org/abs/2312.02055) | Christoph Schlegel (Flashbots) |
+| 2023-12-04 | [Transaction Ordering Auctions](https://arxiv.org/abs/2312.02055) · *FC DeFi 2024* | Christoph Schlegel (Flashbots) |
 | 2023-11-14 | [Cooperative AI via Decentralized Commitment Devices](https://arxiv.org/abs/2311.07815) · *NeurIPS 2023 - Multi-Agent Security Workshop* | Xinyuan Sun (Flashbots), Davide Crapis, Matt Stephenson, Barnabé Monnot, Thomas Thiery, Jonathan Passerat-Palmbach (Flashbots) |
 | 2023-11-06 | [DAO Decentralization: Voting-Bloc Entropy, Bribery, and Dark DAOs](https://arxiv.org/abs/2311.03530) | James Austgen, Andrés Fábrega, Sarah Allen (Flashbots), Kushal Babel, Mahimna Kelkar, Ari Juels |
-| 2023-10-18 | [Buying Time: Latency Racing vs. Bidding for Transaction Ordering](https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.AFT.2023.23) · *AFT 2023* | Akaki Mamageishvili, Mahimna Kelkar, Jan Christoph Schlegel (Flashbots), Edward W. Felten |
-| 2023-10-03 | [Shared Sequencing and Latency Competition as a Noisy Contest](https://arxiv.org/abs/2310.02390) | Akaki Mamageishvili, Jan Christoph Schlegel (Flashbots) |
+| 2023-10-18 | [Buying Time: Latency Racing vs. Bidding for Transaction Ordering](https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.AFT.2023.23) · *AFT 2023* | Akaki Mamageishvili, Mahimna Kelkar, Christoph Schlegel (Flashbots), Edward W. Felten |
+| 2023-10-03 | [Shared Sequencing and Latency Competition as a Noisy Contest](https://arxiv.org/abs/2310.02390) · *FC 2024* | Akaki Mamageishvili, Christoph Schlegel (Flashbots) |
 | 2023-07-20 | [Mempool Privacy: An Economic Perspective](https://arxiv.org/abs/2307.10878) | Antoine Rondelet, Quintus Kilbourn (Flashbots) |
-| 2023-06-29 | [Would Friedman Burn your Tokens?](https://arxiv.org/abs/2306.17025) | Aggelos Kiayias, Philip Lazos, Jan Christoph Schlegel (Flashbots) |
+| 2023-06-29 | [Would Friedman Burn your Tokens?](https://arxiv.org/abs/2306.17025) · *FC 2024* | Aggelos Kiayias, Philip Lazos, Christoph Schlegel (Flashbots) |
 
 ## Flashbots Writings
 
